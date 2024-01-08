@@ -1,0 +1,62 @@
+---
+import { getParsedType } from "astro/zod";
+import Layout from "../layouts/Layout.astro";
+import Card from "../components/Card.astro";
+
+const response = await fetch("https://pokeapi.co/api/v2/pokemon?limit=9999");
+const data = await response.json();
+let pokemons = [];
+
+const promises = data.results.map((element) =>
+  getType(element.url, element.name)
+);
+
+const resolvedPkmns = await Promise.all(promises);
+
+pokemons = resolvedPkmns.flat();
+
+console.log(pokemons);
+
+async function getType(url, name) {
+  const response = await fetch(url).then((response) => response.json());
+  const data = response;
+  let pokemons = [];
+  let tipos = [];
+  let img = null;
+  img = data.sprites.front_default;
+  data.types.forEach((type) => {
+    tipos.push({
+      name: type.type.name,
+    });
+    console.log(tipos);
+  });
+
+  pokemons.push({
+    name: name,
+    types: tipos,
+    sprite: img,
+  });
+
+  return pokemons;
+}
+---
+
+<Layout title="Welcome to Astro.">
+  <main>
+    <!-- <ul>
+      {
+        pokemons.map((pkmn) => (
+          <li>{pkmn.name + " " + pkmn.types.map((t) => t.name ) } </li>
+        ))
+      }
+    </ul> -->
+
+    {
+      pokemons.map((pkmn) => (
+        <Card name={pkmn.name} types={pkmn.types} source={pkmn.sprite} />
+      ))
+    }
+  </main>
+</Layout>
+
+<style></style>
