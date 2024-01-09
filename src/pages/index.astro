@@ -2,8 +2,9 @@
 import { getParsedType } from "astro/zod";
 import Layout from "../layouts/Layout.astro";
 import Card from "../components/Card.astro";
+import Select from "../components/Select.vue";
 
-const response = await fetch("https://pokeapi.co/api/v2/pokemon?limit=9999");
+const response = await fetch("https://pokeapi.co/api/v2/pokemon?limit=10");
 const data = await response.json();
 let pokemons = [];
 
@@ -15,7 +16,54 @@ const resolvedPkmns = await Promise.all(promises);
 
 pokemons = resolvedPkmns.flat();
 
-console.log(pokemons);
+// // Create a Set to store unique type combinations
+// const uniqueTypeCombinations = new Set();
+
+// // Iterate through the Pokémon array
+// pokemons.forEach((pokemon) => {
+//   // Generate a key based on the types of the current Pokémon
+//   const typeKey = pokemon.types
+//     .map((type) => type.name)
+//     .sort()
+//     .join("-");
+
+//   // Add the type combination to the Set
+//   uniqueTypeCombinations.add(typeKey);
+// });
+
+// // Convert the Set back to an array and split the types for each combination
+// const uniqueTypesArray = Array.from(uniqueTypeCombinations).map(
+//   (typeCombination) => typeCombination.split("-")
+// );
+
+// // Now, uniqueTypesArray contains arrays of unique type combinations without Pokémon names
+// console.log(uniqueTypesArray);
+
+// const chosenTypes = ["fire", "psychic"];
+
+// const randomPokemon = pokemons[3];
+
+// const hasChosenTypes = doesPokemonHaveType(randomPokemon, chosenTypes);
+
+// if (hasChosenTypes) {
+//   console.log(
+//     `${randomPokemon.name} has the chosen types: ${chosenTypes.join(", ")}`
+//   );
+// } else {
+//   console.log(
+//     `${randomPokemon.name} does not have the chosen types: ${chosenTypes.join(
+//       ", "
+//     )}`
+//   );
+// }
+
+// // Function to check if a Pokémon has the specified type or types
+// function doesPokemonHaveType(pokemon, chosenTypes) {
+//   // Check if any of the chosen types match the Pokémon's types
+//   return chosenTypes.every((chosenType) =>
+//     pokemon.types.some((pokemonType) => pokemonType.name === chosenType)
+//   );
+// }
 
 async function getType(url, name) {
   const response = await fetch(url).then((response) => response.json());
@@ -24,39 +72,41 @@ async function getType(url, name) {
   let tipos = [];
   let img = null;
   img = data.sprites.front_default;
-  data.types.forEach((type) => {
-    tipos.push({
-      name: type.type.name,
+  if (img != null) {
+    data.types.forEach((type) => {
+      tipos.push({
+        name: type.type.name,
+      });
     });
-    console.log(tipos);
-  });
-
-  pokemons.push({
-    name: name,
-    types: tipos,
-    sprite: img,
-  });
-
+    pokemons.push({
+      name: name,
+      types: tipos,
+      sprite: img,
+    });
+  }
   return pokemons;
 }
 ---
 
 <Layout title="Welcome to Astro.">
   <main>
-    <!-- <ul>
-      {
-        pokemons.map((pkmn) => (
-          <li>{pkmn.name + " " + pkmn.types.map((t) => t.name ) } </li>
-        ))
-      }
-    </ul> -->
-
-    {
+    <Select client:load initialPokemonData={pokemons} />
+    <!-- {
       pokemons.map((pkmn) => (
         <Card name={pkmn.name} types={pkmn.types} source={pkmn.sprite} />
       ))
-    }
+    } -->
   </main>
 </Layout>
 
-<style></style>
+<style>
+  main {
+    margin: auto;
+    padding: 1rem;
+    width: 800px;
+    max-width: calc(100% - 2rem);
+    color: white;
+    font-size: 20px;
+    line-height: 1.6;
+  }
+</style>
