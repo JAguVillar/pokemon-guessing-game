@@ -3,7 +3,7 @@ import { getParsedType } from "astro/zod";
 import Layout from "../layouts/Layout.astro";
 import Main from "../components/Main.vue";
 
-const response = await fetch("https://pokeapi.co/api/v2/pokemon?limit=50");
+const response = await fetch("https://pokeapi.co/api/v2/pokemon?limit=151");
 const data = await response.json();
 let pokemons = [];
 
@@ -64,6 +64,7 @@ async function getType(url, name) {
       name: name,
       types: tipos,
       sprite: img_shiny != null && randomNumber == true ? img_shiny : img,
+      is_shiny: randomNumber,
     });
   }
   return pokemons;
@@ -77,14 +78,4 @@ async function getType(url, name) {
   </main>
 </Layout>
 
-<style>
-  main {
-    /* margin: auto;
-    padding: 1rem;
-    width: 800px;
-    max-width: calc(100% - 2rem); */
-
-    font-size: 20px;
-    /* line-height: 1.6; */
-  }
-</style>
+<style></style>

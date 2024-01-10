@@ -1,7 +1,7 @@
 <template>
   <div class="select-container mx-auto">
     <input
-      class="rounded-lg border-transparent flex-1 appearance-none border border-gray-300 py-2 px-4 bg-blue-50 text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent w-full"
+      class="rounded-lg flex-1 appearance-none border-2 border-[#6246ea] py-2 px-4 text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent w-full"
       placeholder="Your email"
       type="text"
       id="pokemon"
@@ -9,16 +9,19 @@
       @input="filterPokemon"
       @focus="openDropdown"
     />
-    <ul v-if="showDropdown" class="dropdown w-full">
-      <Item
-        @choose="log"
-        v-for="pokemon in filteredPokemon"
-        :key="pokemon"
-        :pokemon="pokemon.name"
-        :sprite="pokemon.sprite"
-        :type="pokemon.types"
-      />
-    </ul>
+    <div class="h-96 overflow-auto">
+      <ul v-if="showDropdown" class="dropdown w-full">
+        <Item
+          @choose="log"
+          v-for="pokemon in filteredPokemon"
+          :key="pokemon"
+          :pokemon="pokemon.name"
+          :sprite="pokemon.sprite"
+          :type="pokemon.types"
+          :is_shiny="pokemon.is_shiny"
+        />
+      </ul>
+    </div>
   </div>
 </template>
 
