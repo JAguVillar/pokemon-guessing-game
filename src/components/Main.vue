@@ -5,49 +5,74 @@
       <img style="width: 128px" :src="imgRoute(type)" alt="" />
     </div>
   </div>
+  <div>
+    HP:
+    <span :class="hpColor">
+      {{ hp + "/3" }}
+    </span>
+  </div>
   <div class="m-4">
     <Filter :initialPokemonData="allPokemon" @choose="log" />
   </div>
-  <div>
-    {{ "HP: " + hp + "/3" }}
-  </div>
-  <template v-if="infoPokemon != null">
-    <div v-if="infoPokemon.mapped">
-      <div
-        class="shadow border select-none cursor-pointer bg-white rounded-md flex flex-1 items-center p-4"
-      >
-        <div class="flex flex-col items-center justify-center mr-4">
-          <img
-            style="width: 120px"
-            :src="infoPokemon.info.sprite"
-            class="mx-auto"
-          />
-        </div>
-        <div class="flex-1 pl-1 mr-4">
-          <div class="font-big capitalize m-2">
-            {{ infoPokemon.info.pokemon }}
-          </div>
-          <div class="flex">
-            <div v-for="type in infoPokemon.info.types" :key="type" class="m-2">
-              <img style="width: 72px" :src="imgRoute(type.name)" alt="" />
-            </div>
-          </div>
-          <div class="font-big capitalize m-2">Descripción Pokédex:</div>
-          <div class="m-2 flex flex-1">
-            <span>
-              {{ infoPokemon.mappedData.version }}
-            </span>
-            <span>
-              {{ infoPokemon.mappedData.flavor_text }}
-            </span>
-          </div>
-        </div>
+
+  <dialog class="modal max-w-3xl rounded-xl" id="modalSuccess">
+    <div class="w-full flex justify-between">
+      <div class="font-big py-2 px-4 m-4">
+        Felicidades!, encontraste a un Pokémon correcto!
       </div>
+      <button
+        type="button"
+        class="py-2 px-4 flex justify-center items-center bg-white hover:bg-slate-400 transition ease-in duration-200 text-center text-base font-semibold focus:outline-none w-12 h-12 rounded-lg m-4"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          height="16"
+          width="12"
+          viewBox="0 0 384 512"
+        >
+          <path
+            d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"
+          />
+        </svg>
+      </button>
     </div>
-    <div v-else>
-      <div>{{ infoPokemon }}</div>
+    <div class="flex justify-center">
+      <img
+        src="../../public/assets/totodile.gif"
+        alt=""
+        style="width: 50%"
+        class="m-4"
+      />
     </div>
-  </template>
+  </dialog>
+  <dialog class="modal max-w-3xl rounded-xl" id="modalFail">
+    <div class="w-full flex justify-between">
+      <div class="font-big py-2 px-4 m-4">Ya no te quedan más intentos!</div>
+      <button
+        type="button"
+        class="py-2 px-4 flex justify-center items-center bg-white hover:bg-slate-400 transition ease-in duration-200 text-center text-base font-semibold focus:outline-none w-12 h-12 rounded-lg m-4"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          height="16"
+          width="12"
+          viewBox="0 0 384 512"
+        >
+          <path
+            d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"
+          />
+        </svg>
+      </button>
+    </div>
+    <div class="flex justify-center">
+      <img
+        src="../../public/assets/pichu.gif"
+        alt=""
+        style="width: 50%"
+        class="m-4"
+      />
+    </div>
+  </dialog>
 </template>
 
 <script>
@@ -73,13 +98,23 @@ export default {
       types: null,
       result: null,
       hp: 3,
+      hpColor: "text-green-600",
       infoPokemon: null,
     };
   },
   watch: {
     hp: function (val) {
-      if (val == 0) {
-        alert("putardo");
+      if (val > 0) {
+        if (val == 3) {
+          this.hpColor = "text-green-600";
+        } else if (val == 2) {
+          this.hpColor = "text-orange-600";
+        } else {
+          this.hpColor = "text-red-600";
+        }
+      } else {
+        const modal = document.querySelector("#modalFail");
+        modal.showModal();
       }
     },
   },
@@ -107,6 +142,8 @@ export default {
           this.hp--;
         } else {
           species_response = await this.getSpecies(value.pokemon);
+          const modal = document.querySelector("#modalSuccess");
+          modal.showModal();
         }
 
         const newArray = species_response.flavor_text_entries.filter(
