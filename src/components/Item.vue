@@ -12,15 +12,16 @@
         <img style="width: 120px" alt="profil" :src="sprite" class="mx-auto" />
       </div>
       <div class="flex-1 pl-1">
-        <div class="fuente font-medium capitalize">
+        <div class="capitalize" style="font-size: 32px">
           {{ pokemon }}
         </div>
       </div>
       <div class="flex flex-col items-center">
         <button
           @click="log(pokemon, type, sprite)"
+          style="font-size: 32px"
           type="button"
-          class="py-2 px-4 bg-[#6246ea] hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 text-white w-full transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 rounded-lg"
+          class="py-2 px-4 bg-[#6246ea] hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 text-white w-full transition ease-in duration-200 text-center shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 rounded-lg"
         >
           Elegir
         </button>
@@ -73,7 +74,7 @@ export default {
 /* Estilos CSS */
 @font-face {
   font-family: "Pkmn";
-  src: url("/fonts/Pkmn.ttf") format("truetype");
+  src: url("/fonts/pokemon-b-w.otf") format("truetype");
 }
 
 * {
