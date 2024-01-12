@@ -14,7 +14,7 @@ async function fetchAll(url) {
     const data = response;
     console.log(data);
     await data.results.forEach((element) => {
-      pokemons.push(element);
+      pokemons.push(element.name);
     });
     // Check if there is a next page and make a recursive call
     if (data.next) {
