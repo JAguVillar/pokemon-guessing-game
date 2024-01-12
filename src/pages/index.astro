@@ -3,78 +3,33 @@ import { getParsedType } from "astro/zod";
 import Layout from "../layouts/Layout.astro";
 import Main from "../components/Main.vue";
 
-const response = await fetch("https://pokeapi.co/api/v2/pokemon?limit=151");
-const data = await response.json();
-let pokemons = [];
+var pokemons = [];
+let allPokemon = await fetchAll("https://pokeapi.co/api/v2/pokemon/?limit=25");
 
-const promises = data.results.map((element) =>
-  getType(element.url, element.name)
-);
+console.log(pokemons);
 
-const resolvedPkmns = await Promise.all(promises);
-
-pokemons = resolvedPkmns.flat();
-
-// Create a Set to store unique type combinations
-const uniqueTypeCombinations = new Set();
-
-// Iterate through the Pokémon array
-pokemons.forEach((pokemon) => {
-  // Generate a key based on the types of the current Pokémon
-  const typeKey = pokemon.types
-    .map((type) => type.name)
-    .sort()
-    .join("-");
-
-  // Add the type combination to the Set
-  uniqueTypeCombinations.add(typeKey);
-});
-
-// Convert the Set back to an array and split the types for each combination
-const uniqueTypesArray = Array.from(uniqueTypeCombinations).map(
-  (typeCombination) => typeCombination.split("-")
-);
-
-let randomType =
-  uniqueTypesArray[Math.floor(Math.random() * uniqueTypesArray.length)];
-
-async function getType(url, name) {
-  console.log(url);
-
-  const response = await fetch(url).then((response) => response.json());
-  const data = response;
-
-  let pokemons = [];
-  let tipos = [];
-  let img = null;
-  let img_shiny = null;
-  const randomNumber = Math.floor(Math.random() * 36) + 1 == 18 ? true : false;
-
-  img = data.sprites.front_default;
-  img_shiny = data.sprites.front_shiny;
-
-  if (img != null) {
-    data.types.forEach((type) => {
-      tipos.push({
-        name: type.type.name,
-      });
+async function fetchAll(url) {
+  if (url != null) {
+    const response = await fetch(url).then((response) => response.json());
+    const data = response;
+    console.log(data);
+    await data.results.forEach((element) => {
+      pokemons.push(element);
     });
-
-    pokemons.push({
-      name: name,
-      types: tipos,
-      sprite: img_shiny != null && randomNumber == true ? img_shiny : img,
-      is_shiny: randomNumber,
-    });
+    // Check if there is a next page and make a recursive call
+    if (data.next) {
+      await fetchAll(data.next);
+    }
+  } else {
+    return;
   }
-  return pokemons;
 }
 ---
 
 <Layout title="Welcome to Astro.">
   <main class="max-w-3xl mx-auto">
     <!-- <Select client:load initialPokemonData={pokemons} /> -->
-    <Main client:load fetchedData={pokemons} uniqueTypes={randomType} />
+    {pokemons}
   </main>
 </Layout>
 
